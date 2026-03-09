@@ -13,34 +13,42 @@ datasource db {
   provider = "postgresql"
 }
 
-/* User model - stores registered user accounts */
+/**
+ * User model - stores registered user accounts
+ */
 model User {
-  id String @id @default(cuid())
-  name String
-  email String @unique
-  password String
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  /* A User can have many reviews and reading statuses */
-  reviews Review[]
+  /**
+   * A User can have many reviews and reading statuses
+   */
+  reviews       Review[]
   readingStatus ReadingStatus[]
 }
 
-/* Review mode - stores user reviews for books */
+/**
+ * Review mode - stores user reviews for books
+ */
 model Review {
-  id String @id @default(cuid())
-  bookId String
+  id        String   @id @default(cuid())
+  bookId    String
   bookTitle String
   bookCover String?
-  body String
-  rating Int
+  body      String
+  rating    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  /* A Review belongs to a User */
+  /**
+   * A Review belongs to a User
+   */
   userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum ReadingStatusType {
@@ -48,20 +56,27 @@ enum ReadingStatusType {
   READING
   READ
 }
-/*  ReadingStatus model - tracks a users reading status for books */
+
+/**
+ * ReadingStatus model - tracks a users reading status for books
+ */
 model ReadingStatus {
-  id String @id @default(cuid())
-  status ReadingStatusType
-  bookId String
+  id        String            @id @default(cuid())
+  status    ReadingStatusType
+  bookId    String
   bookTitle String
   bookCover String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
 
-  /*  Relation to User */
+  /**
+   * Relation to User
+   */
   userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-/* A User can only have one reading status per book */
+  /**
+   * A User can only have one reading status per book
+   */
   @@unique([userId, bookId])
 }
