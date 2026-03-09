@@ -11,5 +11,57 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+/* User model - stores registered user accounts */
+model User {
+  id String @id @default(cuid())
+  name String
+  email String @unique
+  password String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /* A User can have many reviews and reading statuses */
+  reviews Review[]
+  readingStatus ReadingStatus[]
+}
+
+/* Review mode - stores user reviews for books */
+model Review {
+  id String @id @default(cuid())
+  bookId String
+  bookTitle String
+  bookCover String?
+  body String
+  rating Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /* A Review belongs to a User */
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum ReadingStatusType {
+  WANT_TO_READ
+  READING
+  READ
+}
+/*  ReadingStatus model - tracks a users reading status for books */
+model ReadingStatus {
+  id String @id @default(cuid())
+  status ReadingStatusType
+  bookId String
+  bookTitle String
+  bookCover String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /*  Relation to User */
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+/* A User can only have one reading status per book */
+  @@unique([userId, bookId])
 }
