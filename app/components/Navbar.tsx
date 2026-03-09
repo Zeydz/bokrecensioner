@@ -28,18 +28,18 @@ export default function Navbar() {
         {/* User menu if logged in */}
         {session ? (
           <>
-            <span className="text-white/60 text-sm">
-              Hej, {session.user?.name}!
-            </span>
             <Link
               href="/profile"
               className="text-white hover:text-white/80 font-medium transition"
             >
               Min profil
             </Link>
+            <span className="text-white/60 text-sm">
+              Hej, {session.user?.name}!
+            </span>
             <button
               onClick={() => signOut()}
-              className="bg-white/20 hover:bg-white/30 text-white px-5 py-2 rounded-full font-medium transition border border-white/30"
+              className="cursor-pointer bg-white/20 hover:bg-white/30 text-white px-5 py-2 rounded-full font-medium transition border border-white/30"
             >
               Logga ut
             </button>
