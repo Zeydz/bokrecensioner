@@ -28,14 +28,14 @@ export default function Navbar() {
               </span>
               <Link
                 href="/profile"
-                className="text-white hover:text-white/50 text-sm font-medium transition-colors duration-200 flex items-center gap-2"
+                className="text-white hover:text-white/50 text-sm font-medium transition flex items-center gap-2"
               >
                 <User size={15} />
                 Min profil
               </Link>
               <button
                 onClick={() => signOut()}
-                className="flex items-center gap-2 text-white hover:text-white/50 text-sm font-medium transition-colors duration-200 cursor-pointer"
+                className="flex items-center gap-2 text-white hover:text-white/50 text-sm font-medium transition cursor-pointer"
               >
                 <LogOut size={15} />
                 Logga ut
@@ -45,7 +45,7 @@ export default function Navbar() {
             <>
               <Link
                 href="/login"
-                className="text-white/50 hover:text-white text-sm font-medium transition-colors duration-200"
+                className="text-white hover:text-white/50 text-sm font-medium transition"
               >
                 Logga in
               </Link>
@@ -62,7 +62,7 @@ export default function Navbar() {
         {/* Mobile hamburger */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-white/60 hover:text-white transition-colors cursor-pointer"
+          className="md:hidden text-white hover:text-white/50 transition cursor-pointer"
         >
           {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -73,13 +73,13 @@ export default function Navbar() {
         <div className="md:hidden max-w-6xl mx-auto mt-4 pt-4 border-t border-white/10 flex flex-col gap-5 pb-2 transition">
           {session ? (
             <>
-              <span className="text-white/30 text-sm">
-                {session.user?.name}
+              <span className="text-white text-sm">
+                Hej {session.user?.name}!
               </span>
               <Link
                 href="/profile"
                 onClick={() => setMenuOpen(false)}
-                className="text-white/60 hover:text-white text-sm font-medium transition-colors flex items-center gap-2"
+                className="text-white hover:text-white/50 text-sm font-medium transition flex items-center gap-2"
               >
                 <User size={15} />
                 Min profil
@@ -89,7 +89,7 @@ export default function Navbar() {
                   signOut();
                   setMenuOpen(false);
                 }}
-                className="text-white/60 hover:text-white text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer w-fit"
+                className="text-white hover:text-white/50 text-sm font-medium transition flex items-center gap-2 cursor-pointer w-fit"
               >
                 <LogOut size={15} />
                 Logga ut
@@ -100,7 +100,7 @@ export default function Navbar() {
               <Link
                 href="/login"
                 onClick={() => setMenuOpen(false)}
-                className="text-white/60 hover:text-white text-sm font-medium transition-colors"
+                className="text-white hover:text-white/50 text-sm font-medium transition"
               >
                 Logga in
               </Link>
