@@ -39,8 +39,34 @@ export async function searchBooks(query: string): Promise<Book[]> {
     coverImage:
       item.volumeInfo.imageLinks?.thumbnail ||
       "https://placehold.net/default.png",
-    publishedDate: item.volumeInfo.publishedDate || "Okänt",
+    publishedDate: item.volumeInfo.publishedDate || "Okänt år",
     pageCount: item.volumeInfo.pageCount ?? 0,
     categories: item.volumeInfo.categories ?? [],
   }));
+}
+
+/*  Get details of a specific book */
+export async function getBookById(id: string): Promise<Book> {
+  const response = await fetch(
+    `https://www.googleapis.com/books/v1/volumes/${id}?key=${process.env.GOOGLE_BOOKS_API_KEY}`,
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch book details.");
+  }
+
+  const item = await response.json();
+
+  return {
+    id: item.id,
+    title: item.volumeInfo.title,
+    authors: item.volumeInfo.authors || [],
+    description: item.volumeInfo.description || "Ingen beskrivning tillgänglig",
+    coverImage:
+      item.volumeInfo.imageLinks?.thumbnail ||
+      "https://placehold.net/default.png",
+    publishedDate: item.volumeInfo.publishedDate || "Okänt år",
+    pageCount: item.volumeInfo.pageCount ?? 0,
+    categories: item.volumeInfo.categories ?? [],
+  };
 }
