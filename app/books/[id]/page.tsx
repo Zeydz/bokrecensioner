@@ -1,5 +1,11 @@
+import ReadingStatus from "@/app/components/ReadingStatusButton";
+import ReviewCard from "@/app/components/ReviewCard";
+import ReviewForm from "@/app/components/ReviewForm";
+import { authOptions } from "@/lib/auth";
 import { getBookById } from "@/lib/googleBooks";
+import prisma from "@/lib/prisma";
 import { BookOpen, Calendar, Tag } from "lucide-react";
+import { getServerSession } from "next-auth";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -8,8 +14,24 @@ type Props = {
 };
 
 export default async function BookPage({ params }: Props) {
+  /* Get info */
   const { id } = await params;
   const book = await getBookById(id);
+  const session = await getServerSession(authOptions);
+
+  /* Retrieve review and readingStatus information */
+  const [reviews, readingStatus] = await Promise.all([
+    prisma.review.findMany({
+      where: { bookId: id },
+      include: { user: { select: { id: true, name: true } } },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.readingStatus.findFirst({
+      where: { bookId: id, userId: session?.user?.id ?? "" },
+    }),
+  ]);
+
+  const userReview = reviews.find((r) => r.user.id === session?.user?.id);
 
   /* 404 */
   if (!book) {
@@ -38,6 +60,14 @@ export default async function BookPage({ params }: Props) {
               {book.title}
             </h1>
             <p className="text-muted text-lg">{book.authors.join(", ")}</p>
+            {session?.user && (
+              <ReadingStatus
+                bookId={book.id}
+                bookTitle={book.title}
+                bookCover={book.coverImage}
+                currentStatus={readingStatus?.status ?? null}
+              />
+            )}
           </>
           {/* Metadata */}
           <div className="flex flex-wrap gap-4 text-sm text-muted">
@@ -74,9 +104,47 @@ export default async function BookPage({ params }: Props) {
       {/* Reviews section - fylls i senare */}
       <div>
         <h2 className="text-xl font-semibold text-navy mb-6">Recensioner</h2>
-        <p className="text-muted text-sm">
-          Inga recensioner ännu. Bli den första!
-        </p>
+        {/* Review form, check if user already made a review */}
+        {session?.user ? (
+          userReview ? (
+            <p className="text-muted text-sm mb-6">
+              Du har redan recenserat den här boken.
+            </p>
+          ) : (
+            <div className="mb-8">
+              <ReviewForm
+                bookId={book.id}
+                bookTitle={book.title}
+                bookCover={book.coverImage}
+              />
+            </div>
+          )
+        ) : (
+          /* If user doesn't have a session, ask them to Log in */
+          <p className="text-muted text-sm mb-6">
+            <a href="/login" className="text-blue hover:underline">
+              Logga in
+            </a>{" "}
+            för att skriva en recension.
+          </p>
+        )}
+
+        {/* Show reviews */}
+        {reviews.length === 0 ? (
+          <p className="text-muted text-sm">
+            Inga recensioner ännu. Bli den första!
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {reviews.map((review) => (
+              <ReviewCard
+                key={review.id}
+                review={review}
+                currentUserId={session?.user?.id}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
