@@ -1,3 +1,4 @@
+import ReadingStatus from "@/app/components/ReadingStatusButton";
 import ReviewCard from "@/app/components/ReviewCard";
 import ReviewForm from "@/app/components/ReviewForm";
 import { authOptions } from "@/lib/auth";
@@ -13,14 +14,20 @@ type Props = {
 };
 
 export default async function BookPage({ params }: Props) {
+  /* Get info */
   const { id } = await params;
   const book = await getBookById(id);
-  const [session, reviews] = await Promise.all([
-    getServerSession(authOptions),
+  const session = await getServerSession(authOptions);
+
+  /* Retrieve review and readingStatus information */
+  const [reviews, readingStatus] = await Promise.all([
     prisma.review.findMany({
       where: { bookId: id },
       include: { user: { select: { id: true, name: true } } },
       orderBy: { createdAt: "desc" },
+    }),
+    prisma.readingStatus.findFirst({
+      where: { bookId: id, userId: session?.user?.id ?? "" },
     }),
   ]);
 
@@ -53,6 +60,14 @@ export default async function BookPage({ params }: Props) {
               {book.title}
             </h1>
             <p className="text-muted text-lg">{book.authors.join(", ")}</p>
+            {session?.user && (
+              <ReadingStatus
+                bookId={book.id}
+                bookTitle={book.title}
+                bookCover={book.coverImage}
+                currentStatus={readingStatus?.status ?? null}
+              />
+            )}
           </>
           {/* Metadata */}
           <div className="flex flex-wrap gap-4 text-sm text-muted">
