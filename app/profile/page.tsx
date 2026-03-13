@@ -1,6 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
@@ -74,12 +75,12 @@ export default async function ProfilePage() {
                 className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm"
               >
                 <div className="flex items-start justify-between mb-2">
-                  <a
+                  <Link
                     href={`/books/${review.bookId}`}
                     className="font-medium text-navy hover:underline"
                   >
                     {review.bookTitle}
-                  </a>
+                  </Link>
                   <span className="text-yellow-400 text-sm">
                     {/* Show the amount of stars based on rating-value */}
                     {"★".repeat(review.rating)}
@@ -122,7 +123,7 @@ export default async function ProfilePage() {
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {/* Map each book with key, booktitle and cover */}
                     {books.map((book) => (
-                      <a key={book.id} href={`/books/${book.bookId}`}>
+                      <Link key={book.id} href={`/books/${book.bookId}`}>
                         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                           {book.bookCover && (
                             <img
@@ -135,7 +136,7 @@ export default async function ProfilePage() {
                             {book.bookTitle}
                           </p>
                         </div>
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </div>
