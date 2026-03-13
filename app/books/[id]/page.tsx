@@ -18,6 +18,11 @@ export default async function BookPage({ params }: Props) {
   /* Get info */
   const { id } = await params;
   const book = await getBookById(id);
+
+  /* 404 */
+  if (!book) {
+    notFound();
+  }
   const session = await getServerSession(authOptions);
 
   /* Retrieve review and readingStatus information */
@@ -33,11 +38,6 @@ export default async function BookPage({ params }: Props) {
   ]);
 
   const userReview = reviews.find((r) => r.user.id === session?.user?.id);
-
-  /* 404 */
-  if (!book) {
-    notFound();
-  }
 
   return (
     <div className="max-w-5xl mx-auto py-12 px-6">
