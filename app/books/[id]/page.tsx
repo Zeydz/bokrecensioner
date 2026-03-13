@@ -1,3 +1,4 @@
+import BackButton from "@/app/components/BackButton";
 import ReadingStatus from "@/app/components/ReadingStatusButton";
 import ReviewCard from "@/app/components/ReviewCard";
 import ReviewForm from "@/app/components/ReviewForm";
@@ -40,6 +41,7 @@ export default async function BookPage({ params }: Props) {
 
   return (
     <div className="max-w-5xl mx-auto py-12 px-6">
+      <BackButton />
       <div className="flex flex-col md:flex-row gap-10">
         {/* Cover */}
         <div className="shrink-0 flex justify-center md:justify-start">
