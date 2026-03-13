@@ -39,6 +39,14 @@ export default async function BookPage({ params }: Props) {
 
   const userReview = reviews.find((r) => r.user.id === session?.user?.id);
 
+  /* Get the average rating with reduce. It goes through the reviews and sums them together */
+  const avgRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+        ).toFixed(1)
+      : null;
+
   return (
     <div className="max-w-5xl mx-auto py-12 px-6">
       <BackButton />
@@ -103,9 +111,18 @@ export default async function BookPage({ params }: Props) {
       </div>
       {/* Divider */}
       <div className="border-t border-gray-200 my-10" />
-      {/* Reviews section - fylls i senare */}
       <div>
-        <h2 className="text-xl font-semibold text-navy mb-6">Recensioner</h2>
+        {/* Get average review-rating */}
+        <div className="flex items-center gap-3 mb-6">
+          <h2 className="text-xl font-semibold text-navy">Recensioner</h2>
+          {avgRating && (
+            <span className="flex items-center gap-1 text-sm text-muted">
+              <span className="text-yellow-400">★</span>
+              {avgRating} ({reviews.length}{" "}
+              {reviews.length === 1 ? "recension" : "recensioner"})
+            </span>
+          )}
+        </div>
         {/* Review form, check if user already made a review */}
         {session?.user ? (
           userReview ? (

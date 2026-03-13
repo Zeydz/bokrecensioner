@@ -25,7 +25,7 @@ export default async function ProfilePage() {
   ]);
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-6">
+    <div className="max-w-4xl mx-auto py-12 px-0 sm:px-6">
       {/* User information */}
       <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 mb-8">
         <div className="flex items-center gap-6">
