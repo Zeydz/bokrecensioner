@@ -58,6 +58,7 @@ export default async function BookPage({ params }: Props) {
             <Image
               src={book.coverImage}
               alt={book.title}
+              sizes="192px"
               fill
               className="object-cover"
             />
