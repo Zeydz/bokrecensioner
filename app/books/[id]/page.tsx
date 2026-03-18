@@ -2,6 +2,7 @@ import BackButton from "@/app/components/BackButton";
 import ReadingStatus from "@/app/components/ReadingStatusButton";
 import ReviewCard from "@/app/components/ReviewCard";
 import ReviewForm from "@/app/components/ReviewForm";
+import ReviewList from "@/app/components/ReviewList";
 import { authOptions } from "@/lib/auth";
 import { getBookById } from "@/lib/googleBooks";
 import prisma from "@/lib/prisma";
@@ -154,15 +155,7 @@ export default async function BookPage({ params }: Props) {
             Inga recensioner ännu. Bli den första!
           </p>
         ) : (
-          <div className="space-y-4">
-            {reviews.map((review) => (
-              <ReviewCard
-                key={review.id}
-                review={review}
-                currentUserId={session?.user?.id}
-              />
-            ))}
-          </div>
+          <ReviewList reviews={reviews} currentUserId={session?.user?.id} />
         )}
       </div>
     </div>
