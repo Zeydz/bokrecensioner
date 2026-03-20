@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bokrecensioner
 
-## Getting Started
+En webbaserad plattform för bokrecensioner byggd med Next.js, React och TypeScript. Användare kan söka efter böcker via Google Books API, skriva recensioner med stjärnbetyg och hantera en personlig läslista.
 
-First, run the development server:
+## Funktioner
 
+- Sök efter böcker via Google Books API
+- Skriv, redigera och ta bort recensioner med stjärnbetyg (1-5)
+- Hantera lässtatus per bok (Vill läsa / Läser / Har läst)
+- Profilsida med statistik, recensioner och läslista
+- Registrering och inloggning med JWT-autentisering
+- Genomsnittligt betyg per bok
+- Sortering av recensioner (nyast / högst betyg)
+- Sökhistorik i sökfältet
+- Responsiv design för desktop och mobil
+
+## Teknikstack
+
+- **Framework:** Next.js (App Router)
+- **Frontend:** React, TypeScript, Tailwind CSS
+- **Databas:** PostgreSQL via Supabase
+- **ORM:** Prisma 
+- **Autentisering:** NextAuth.js (JWT + CredentialsProvider)
+- **Animationer:** Motion (tidigare Framer Motion)
+- **API:** Google Books API
+
+## Installation
+
+### Krav
+- PostgreSQL-databas (t.ex. via Supabase)
+
+### Steg
+
+1. Klona repot:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/Zeydz/bokrecensioner.git
+cd bokrecensioner
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Installera beroenden:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Skapa en `.env`-fil i projektets rot:
+```env
+DATABASE_URL=din-supabase-connection-string
+NEXTAUTH_SECRET=din-hemliga-nyckel
+NEXTAUTH_URL=http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Generera Prisma-klienten och kör migrationer:
+```bash
+npx prisma generate
+npx prisma db push
+```
 
-## Learn More
+5. Starta utvecklingsservern:
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Öppna [http://localhost:3000](http://localhost:3000) i webbläsaren.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Testinloggning
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Du kan registrera ett eget konto på `/register`
 
-## Deploy on Vercel
+## Publicerad applikation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[bokrecensioner.vercel.app](https://bokrecensioner.vercel.app)
