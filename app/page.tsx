@@ -6,6 +6,8 @@ import { ClipLoader } from "react-spinners";
 import { motion, AnimatePresence } from "motion/react";
 import { searchAction } from "@/app/actions/search";
 import BookCard from "@/app/components/BookCard";
+import { getRecentBooks } from "./actions/recentbooks";
+import Link from "next/link";
 
 const initialState = { books: [], query: "" };
 
@@ -17,9 +19,17 @@ export default function HomePage() {
   const [searchValue, setSearchValue] = useState("");
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
+  const [recentBooks, setRecentBooks] = useState<
+    {
+      bookId: string;
+      bookTitle: string;
+      bookCover: string | null;
+    }[]
+  >([]);
 
   /* Get search history */
   useEffect(() => {
+    getRecentBooks().then(setRecentBooks);
     const saved = localStorage.getItem("searchHistory");
     if (saved) {
       setHistory(JSON.parse(saved));
@@ -94,7 +104,7 @@ export default function HomePage() {
               /* When input-field is focused, show search history with delay */
               onFocus={() => setShowHistory(true)}
               onBlur={() => setTimeout(() => setShowHistory(false), 150)}
-              placeholder="Titel, författare eller ISBN..."
+              placeholder="Titel..."
               className="w-full bg-white border border-gray-200 rounded-full pl-10 pr-6 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue shadow-sm"
             />
             {/* Search history */}
@@ -183,6 +193,51 @@ export default function HomePage() {
             </motion.div>
           )}
         </AnimatePresence>
+        {/* Recently reviewed books - only show when no search is active */}
+        {!state.query && !isPending && recentBooks.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <h2 className="text-xl font-semibold text-navy mb-6">
+              Senast recenserade
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+              {recentBooks.map((book, index) => (
+                <motion.div
+                  key={book.bookId}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                >
+                  <Link href={`/books/${book.bookId}`}>
+                    <div className="group flex flex-col gap-3 cursor-pointer">
+                      <div className="relative w-full aspect-2-3 rounded-lg overflow-hidden bg-gray-100 shadow-sm group-hover:shadow-md transition-shadow duration-300">
+                        {book.bookCover ? (
+                          <img
+                            src={book.bookCover}
+                            alt={book.bookTitle}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-muted text-xs">
+                              Ingen bild
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <p className="font-semibold text-navy text-sm line-clamp-2 leading-snug px-1">
+                        {book.bookTitle}
+                      </p>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </section>
     </div>
   );
