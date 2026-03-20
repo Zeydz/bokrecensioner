@@ -4,7 +4,12 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export default async function ProfilePage() {
+/* Props to be able to get the searchparams */
+type Props = {
+  searchParams: Promise<{ page?: string }>;
+};
+
+export default async function ProfilePage({ searchParams }: Props) {
   /* Get session */
   const session = await getServerSession(authOptions);
 
@@ -12,20 +17,33 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  /* Retrieve review and readingStatus information */
-  const [reviews, readingStatus] = await Promise.all([
+  /* Get page search params, for example if we paginate to page 2, pageParam will be 2 */
+  const { page: pageParam } = await searchParams;
+  const page = Number(pageParam) || 1;
+  const perPage = 5;
+
+  /* Retrieve review, readingStatus and totalReviews information */
+  const [reviews, readingStatus, totalReviews] = await Promise.all([
     prisma.review.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
+      skip: (page - 1) * perPage,
+      take: perPage,
     }),
     prisma.readingStatus.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
     }),
+    prisma.review.count({
+      where: { userId: session.user.id },
+    }),
   ]);
 
+  /* Round using ceil */
+  const totalPages = Math.ceil(totalReviews / perPage);
+
   return (
-    <div className="max-w-4xl mx-auto py-12 px-6">
+    <div className="max-w-4xl mx-auto py-12 px-0 sm:px-6">
       {/* User information */}
       <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 mb-8">
         <div className="flex items-center gap-6">
@@ -45,7 +63,7 @@ export default async function ProfilePage() {
         {/* Statistics */}
         <div className="flex gap-8 mt-6 pt-6 border-t border-gray-100">
           <div>
-            <p className="text-2xl font-bold text-navy">{reviews.length}</p>
+            <p className="text-2xl font-bold text-navy">{totalReviews}</p>
             <p className="text-sm text-muted">Recensioner</p>
           </div>
           <div>
@@ -92,6 +110,31 @@ export default async function ProfilePage() {
                 </p>
               </div>
             ))}
+
+            {/* Show the pagination buttons */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-3 mt-6">
+                {page > 1 && (
+                  <Link
+                    href={`/profile?page=${page - 1}`}
+                    className="px-4 py-2 text-sm rounded-full border border-gray-200 text-navy hover:border-navy transition-colors"
+                  >
+                    ← Föregående
+                  </Link>
+                )}
+                <span className="text-sm text-muted">
+                  {page} / {totalPages}
+                </span>
+                {page < totalPages && (
+                  <Link
+                    href={`/profile?page=${page + 1}`}
+                    className="px-4 py-2 text-sm rounded-full border border-gray-200 text-navy hover:border-navy transition-colors"
+                  >
+                    Nästa →
+                  </Link>
+                )}
+              </div>
+            )}
           </div>
         )}
       </section>

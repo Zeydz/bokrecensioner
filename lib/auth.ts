@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
       /*  This function is called when a user attempts to sign in. It checks the provided credentials against the database. */
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and password are required");
+          return null;
         }
 
         const user = await prisma.user.findUnique({
@@ -31,7 +31,7 @@ export const authOptions: NextAuthOptions = {
           !user ||
           !(await bcrypt.compare(credentials.password, user.password))
         ) {
-          throw new Error("Invalid email or password");
+          return null;
         }
 
         return { id: user.id, name: user.name, email: user.email };

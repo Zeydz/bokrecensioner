@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { ReadingStatusType } from "../generated/prisma/enums";
+import { revalidatePath } from "next/cache";
 
 export async function setReadingStatus(
   bookId: string,
@@ -44,4 +45,6 @@ export async function setReadingStatus(
   }
 
   /* Update page */
+  revalidatePath(`/books/${bookId}`);
+  return { success: true };
 }
